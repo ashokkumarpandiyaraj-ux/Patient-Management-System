@@ -1,0 +1,6 @@
+{
+  "name": "CareTrack – Patient Management System",
+  "description": "A comprehensive, responsive healthcare patient management system demonstrating full CRUD operations for patients and appointments with Supabase integration.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
