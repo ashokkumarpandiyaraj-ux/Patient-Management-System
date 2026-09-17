@@ -44,7 +44,7 @@ export interface UserProfile {
   avatar_url?: string;
 }
 
-export type ActiveTab = 'dashboard' | 'patients' | 'appointments' | 'settings';
+export type ActiveTab = 'patients' | 'appointments' | 'settings';
 
 export interface PatientFilterOptions {
   searchQuery: string;

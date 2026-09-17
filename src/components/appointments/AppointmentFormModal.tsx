@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Appointment, Patient, AppointmentStatus } from '../../types';
-import { AVAILABLE_DOCTORS } from '../../services/sampleData';
+import { AVAILABLE_DOCTORS } from '../../constants/formOptions';
 import { X, CalendarPlus, Save, AlertCircle, Clock, Calendar, Stethoscope, User, FileText } from 'lucide-react';
 
 interface AppointmentFormModalProps {

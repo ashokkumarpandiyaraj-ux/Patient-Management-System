@@ -1,93 +1,41 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-// Read from import.meta.env or localStorage (allows evaluator to configure directly in UI)
-const getStoredCredentials = () => {
-  const envUrl = import.meta.env.VITE_SUPABASE_URL || '';
-  const envKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || '';
 
-  const localUrl = localStorage.getItem('caretrack_supabase_url') || '';
-  const localKey = localStorage.getItem('caretrack_supabase_anon_key') || '';
-
-  const finalUrl = (localUrl && localUrl.startsWith('http')) ? localUrl : (envUrl && envUrl.startsWith('http') ? envUrl : '');
-  const finalKey = localKey || envKey || '';
-
-  return { url: finalUrl, key: finalKey };
-};
-
-let currentClient: SupabaseClient | null = null;
-let currentUrl = '';
-let currentKey = '';
-
-export const getSupabaseClient = (): SupabaseClient | null => {
-  const { url, key } = getStoredCredentials();
-
-  // If credentials haven't changed and client exists, reuse
-  if (currentClient && currentUrl === url && currentKey === key) {
-    return currentClient;
-  }
-
-  // If valid credentials exist, create client
-  if (url && key && url.startsWith('http') && !url.includes('your-project.supabase.co')) {
-    try {
-      currentClient = createClient(url, key, {
+export const supabase: SupabaseClient | null =
+  supabaseUrl && supabaseKey && supabaseUrl.startsWith('http')
+    ? createClient(supabaseUrl, supabaseKey, {
         auth: {
           persistSession: true,
           autoRefreshToken: true,
         },
-      });
-      currentUrl = url;
-      currentKey = key;
-      return currentClient;
-    } catch (err) {
-      console.warn('Failed to initialize Supabase client:', err);
-      return null;
-    }
+      })
+    : null;
+
+export const getSupabaseClient = (): SupabaseClient | null => supabase;
+
+export const isSupabaseConfigured = (): boolean => Boolean(supabase);
+
+export const getSupabaseConfig = () => ({
+  url: supabaseUrl,
+  key: supabaseKey,
+});
+
+export const testConnection = async (): Promise<{ success: boolean; message: string; tableFound?: boolean }> => {
+  if (!supabase) {
+    return { success: false, message: 'Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY to your environment variables.' };
   }
 
-  return null;
-};
-
-export const isSupabaseConfigured = (): boolean => {
-  const { url, key } = getStoredCredentials();
-  return Boolean(url && key && url.startsWith('http') && !url.includes('your-project.supabase.co'));
-};
-
-export const getSupabaseConfig = () => {
-  return getStoredCredentials();
-};
-
-export const saveSupabaseConfig = (url: string, key: string) => {
-  localStorage.setItem('caretrack_supabase_url', url.trim());
-  localStorage.setItem('caretrack_supabase_anon_key', key.trim());
-  currentClient = null; // force recreation on next call
-};
-
-export const clearSupabaseConfig = () => {
-  localStorage.removeItem('caretrack_supabase_url');
-  localStorage.removeItem('caretrack_supabase_anon_key');
-  currentClient = null;
-};
-
-export const testConnection = async (url?: string, key?: string): Promise<{ success: boolean; message: string; tableFound?: boolean }> => {
   try {
-    const testUrl = url || getStoredCredentials().url;
-    const testKey = key || getStoredCredentials().key;
-
-    if (!testUrl || !testKey) {
-      return { success: false, message: 'Supabase URL and Anon Key are required.' };
-    }
-
-    const testClient = createClient(testUrl, testKey);
-    // Attempt a light query on the patients table
-    const { data, error } = await testClient.from('patients').select('id').limit(1);
+    const { data, error } = await supabase.from('patients').select('id').limit(1);
 
     if (error) {
-      // Check if table missing
       if (error.code === '42P01' || error.message?.includes('does not exist')) {
         return {
           success: true,
           tableFound: false,
-          message: 'Connected to Supabase project successfully, but "patients" table is not created yet. Please execute the provided SQL script in your Supabase SQL Editor.',
+          message: 'Connected to Supabase project successfully, but the "patients" table is not created yet. Please run the provided SQL schema in your Supabase SQL Editor.',
         };
       }
       return { success: false, message: `Connection error: ${error.message}` };
@@ -96,7 +44,7 @@ export const testConnection = async (url?: string, key?: string): Promise<{ succ
     return {
       success: true,
       tableFound: true,
-      message: `Successfully connected to Supabase! Found ${data?.length ?? 0} record(s) in patients table.`,
+      message: `Successfully connected to Supabase! Found ${data?.length ?? 0} record(s) in the patients table.`,
     };
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Unknown connection error';

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Patient, Gender, BloodGroup } from '../../types';
-import { BLOOD_GROUPS } from '../../services/sampleData';
+import { BLOOD_GROUPS } from '../../constants/formOptions';
 import { X, UserPlus, Save, AlertCircle, Calendar, Phone, Mail, MapPin, HeartPulse, User } from 'lucide-react';
 
 interface PatientFormModalProps {
@@ -110,7 +110,7 @@ export const PatientFormModal: React.FC<PatientFormModalProps> = ({
     setFormData(prev => ({
       ...prev,
       date_of_birth: dob,
-      age: calculatedAge > 0 ? calculatedAge : prev.age,
+      age: calculatedAge,
     }));
 
     if (errors.date_of_birth) {

@@ -31,6 +31,17 @@ CREATE TABLE IF NOT EXISTS patients (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+-- Upgrade databases created by earlier versions of CareTrack.  CREATE TABLE
+-- IF NOT EXISTS does not add columns to an already-existing table.
+ALTER TABLE patients ADD COLUMN IF NOT EXISTS age INTEGER;
+UPDATE patients
+SET age = EXTRACT(YEAR FROM age(CURRENT_DATE, date_of_birth))::INTEGER
+WHERE age IS NULL;
+ALTER TABLE patients ALTER COLUMN age SET NOT NULL;
+ALTER TABLE patients DROP CONSTRAINT IF EXISTS patients_age_check;
+ALTER TABLE patients
+    ADD CONSTRAINT patients_age_check CHECK (age >= 0 AND age <= 130);
+
 -- 4. Create Appointments Table (Belongs to a Patient via foreign key)
 CREATE TABLE IF NOT EXISTS appointments (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -57,20 +68,22 @@ CREATE INDEX IF NOT EXISTS idx_appointments_status ON appointments (status);
 CREATE INDEX IF NOT EXISTS idx_appointments_date ON appointments (appointment_date);
 
 -- 6. Row Level Security (RLS) Configuration
--- For college evaluation, enable public or authenticated access
+-- Restrict application data to signed-in Supabase users.
 ALTER TABLE patients ENABLE ROW LEVEL SECURITY;
 ALTER TABLE appointments ENABLE ROW LEVEL SECURITY;
 
--- Allow public/authenticated read/insert/update/delete for demo & application usage
+-- Allow the browser client to operate on application records.
 DROP POLICY IF EXISTS "Allow all operations on patients" ON patients;
 CREATE POLICY "Allow all operations on patients" ON patients
     FOR ALL
+    TO anon, authenticated
     USING (true)
     WITH CHECK (true);
 
 DROP POLICY IF EXISTS "Allow all operations on appointments" ON appointments;
 CREATE POLICY "Allow all operations on appointments" ON appointments
     FOR ALL
+    TO anon, authenticated
     USING (true)
     WITH CHECK (true);
 

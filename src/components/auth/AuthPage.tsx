@@ -2,21 +2,21 @@ import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { 
-  HeartPulse, Shield, UserCheck, Lock, Mail, User, Stethoscope, 
+  HeartPulse, Shield, Lock, Mail, User, Stethoscope,
   ArrowRight, Sparkles, CheckCircle2, AlertCircle, Eye, EyeOff
 } from 'lucide-react';
 import { UserProfile } from '../../types';
 
 export const AuthPage: React.FC = () => {
-  const { login, signUp, demoLogin, isLoading } = useAuth();
+  const { login, signUp, isLoading } = useAuth();
   const { showToast } = useToast();
 
   const [mode, setMode] = useState<'login' | 'signup'>('login');
   const [showPassword, setShowPassword] = useState(false);
 
   // Login form state
-  const [email, setEmail] = useState('dr.jenkins@caretrack.hospital.org');
-  const [password, setPassword] = useState('Hospital@2025');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   // Sign up form state
   const [signUpName, setSignUpName] = useState('');
@@ -63,17 +63,15 @@ export const AuthPage: React.FC = () => {
 
     const res = await signUp(signUpEmail, signUpPassword, signUpName, signUpRole);
     if (res.success) {
-      showToast('success', 'Account Registered', `Welcome to CareTrack, ${signUpName}.`);
+      showToast(
+        'success',
+        'Account Registered',
+        res.confirmationRequired ? 'Check your email to confirm the account, then sign in.' : `Welcome to CareTrack, ${signUpName}.`
+      );
     } else {
       setFormError(res.error || 'Registration failed.');
       showToast('error', 'Sign Up Failed', res.error || 'Registration error');
     }
-  };
-
-  const handleDemoLogin = async (role: 'Physician' | 'Administrator' | 'Nurse') => {
-    setFormError(null);
-    await demoLogin(role);
-    showToast('success', 'Demo Login Successful', `Logged in as ${role} for evaluation.`);
   };
 
   return (
@@ -133,7 +131,7 @@ export const AuthPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Side: Auth Form & Fast Evaluator Logins (7 cols) */}
+        {/* Right Side: Auth Form (7 cols) */}
         <div className="lg:col-span-7 p-8 sm:p-10 bg-white text-slate-900 flex flex-col justify-between">
           <div>
             {/* Quick Mode Toggle */}
@@ -168,45 +166,6 @@ export const AuthPage: React.FC = () => {
               <span className="text-xs font-semibold text-teal-700 bg-teal-50 px-2.5 py-1 rounded-md border border-teal-100">
                 Role Protected
               </span>
-            </div>
-
-            {/* Evaluator Fast Login Bar */}
-            <div className="mt-5 p-3.5 rounded-2xl bg-teal-50/60 border border-teal-200/80">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-bold text-teal-900 flex items-center gap-1.5">
-                  <UserCheck className="w-3.5 h-3.5 text-teal-700" /> Fast Demo Access (1-Click)
-                </span>
-                <span className="text-[10px] text-teal-700 font-medium">No signup needed</span>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                <button
-                  type="button"
-                  onClick={() => handleDemoLogin('Physician')}
-                  disabled={isLoading}
-                  className="px-2.5 py-1.5 text-xs font-semibold text-teal-800 bg-white hover:bg-teal-100/80 border border-teal-200 rounded-xl transition-all shadow-2xs text-left cursor-pointer"
-                >
-                  <span className="block font-bold text-slate-900">Dr. Sarah Jenkins</span>
-                  <span className="text-[10px] text-teal-600 block">Lead Physician</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleDemoLogin('Administrator')}
-                  disabled={isLoading}
-                  className="px-2.5 py-1.5 text-xs font-semibold text-teal-800 bg-white hover:bg-teal-100/80 border border-teal-200 rounded-xl transition-all shadow-2xs text-left cursor-pointer"
-                >
-                  <span className="block font-bold text-slate-900">Alex Morgan</span>
-                  <span className="text-[10px] text-blue-600 block">Hospital Admin</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleDemoLogin('Nurse')}
-                  disabled={isLoading}
-                  className="px-2.5 py-1.5 text-xs font-semibold text-teal-800 bg-white hover:bg-teal-100/80 border border-teal-200 rounded-xl transition-all shadow-2xs text-left cursor-pointer"
-                >
-                  <span className="block font-bold text-slate-900">Chloe Bennett</span>
-                  <span className="text-[10px] text-emerald-600 block">Staff Nurse, RN</span>
-                </button>
-              </div>
             </div>
 
             {/* Error Message */}

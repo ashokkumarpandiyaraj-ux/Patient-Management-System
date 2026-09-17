@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Appointment, Patient, AppointmentStatus, AppointmentFilterOptions } from '../../types';
-import { AVAILABLE_DOCTORS } from '../../services/sampleData';
+import { AVAILABLE_DOCTORS } from '../../constants/formOptions';
 import { AppointmentFormModal } from './AppointmentFormModal';
 import { AppointmentDetailModal } from './AppointmentDetailModal';
 import { ConfirmDialog } from '../common/ConfirmDialog';

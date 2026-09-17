@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Patient, Gender, BloodGroup, PatientFilterOptions, Appointment } from '../../types';
-import { BLOOD_GROUPS } from '../../services/sampleData';
+import { BLOOD_GROUPS } from '../../constants/formOptions';
 import { PatientFormModal } from './PatientFormModal';
 import { PatientDetailModal } from './PatientDetailModal';
 import { ConfirmDialog } from '../common/ConfirmDialog';

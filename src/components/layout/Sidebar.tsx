@@ -3,7 +3,7 @@ import { ActiveTab } from '../../types';
 import { useAuth } from '../../context/AuthContext';
 import { isSupabaseConfigured } from '../../services/supabase';
 import { 
-  LayoutDashboard, Users, Calendar, Settings, LogOut, 
+  Users, Calendar, Settings, LogOut, 
   HeartPulse, Shield, Database, ChevronRight, X, Sparkles
 } from 'lucide-react';
 
@@ -28,7 +28,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const isConnected = isSupabaseConfigured();
 
   const navItems: { id: ActiveTab; label: string; icon: React.FC<{ className?: string }>; badge?: number }[] = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'patients', label: 'Patients', icon: Users, badge: patientCount },
     { id: 'appointments', label: 'Appointments', icon: Calendar, badge: appointmentCount },
     { id: 'settings', label: 'Settings & DB', icon: Settings },
@@ -128,23 +127,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
           })}
         </div>
 
-        {/* Database Status Indicator & User Profile */}
-        <div className="p-3 border-t border-slate-800 space-y-2">
-          {/* Database Source Pill */}
-          <div
-            onClick={() => handleNav('settings')}
-            className="p-2.5 rounded-xl bg-slate-800/60 hover:bg-slate-800 border border-slate-700/50 flex items-center justify-between cursor-pointer transition-colors"
-          >
-            <div className="flex items-center gap-2">
-              <span className={`w-2 h-2 rounded-full ${isConnected ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`} />
-              <span className="text-[11px] font-medium text-slate-300">
-                {isConnected ? 'Supabase Database' : 'Local Demo Store'}
-              </span>
-            </div>
-            <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
-          </div>
-
-          {/* User Account Info */}
+        {/* User Profile */}
+        <div className="p-3 border-t border-slate-800">
           <div className="p-2.5 rounded-xl bg-slate-800/40 border border-slate-700/40 flex items-center justify-between">
             <div className="flex items-center gap-2.5 min-w-0">
               <div className="w-8 h-8 rounded-lg bg-teal-500/20 border border-teal-500/40 text-teal-300 font-bold flex items-center justify-center text-xs shrink-0">

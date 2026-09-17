@@ -25,10 +25,6 @@ export const Header: React.FC<HeaderProps> = ({
   const isConnected = isSupabaseConfigured();
 
   const titles: Record<ActiveTab, { title: string; subtitle: string }> = {
-    dashboard: {
-      title: 'Clinical Overview',
-      subtitle: 'Real-time patient census, upcoming visits, and healthcare activity',
-    },
     patients: {
       title: 'Patient Directory',
       subtitle: 'Complete CRUD registry with search, blood group filters, and medical profiles',
@@ -43,7 +39,7 @@ export const Header: React.FC<HeaderProps> = ({
     },
   };
 
-  const current = titles[activeTab] || titles.dashboard;
+  const current = titles[activeTab];
 
   return (
     <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-slate-200/80 px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4">
@@ -76,7 +72,7 @@ export const Header: React.FC<HeaderProps> = ({
         >
           <span className={`w-2 h-2 rounded-full ${isConnected ? 'bg-emerald-500' : 'bg-amber-500'}`} />
           <span className="hidden md:inline">
-            {isConnected ? 'Supabase Connected' : 'Local Demo DB'}
+            {isConnected ? 'Supabase Connected' : 'Database'}
           </span>
         </button>
 

@@ -6,7 +6,6 @@ import { ToastProvider, useToast } from './context/ToastContext';
 import { AuthPage } from './components/auth/AuthPage';
 import { Sidebar } from './components/layout/Sidebar';
 import { Header } from './components/layout/Header';
-import { DashboardView } from './components/dashboard/DashboardView';
 import { PatientsView } from './components/patients/PatientsView';
 import { AppointmentsView } from './components/appointments/AppointmentsView';
 import { SettingsView } from './components/settings/SettingsView';
@@ -20,7 +19,7 @@ const CareTrackMain: React.FC = () => {
   const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
   const { showToast } = useToast();
 
-  const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard');
+  const [activeTab, setActiveTab] = useState<ActiveTab>('patients');
   const [isOpenMobile, setIsOpenMobile] = useState(false);
 
   // Data states
@@ -211,22 +210,6 @@ const CareTrackMain: React.FC = () => {
 
         {/* Tab Views */}
         <main className="flex-1 p-4 sm:p-8 max-w-7xl w-full mx-auto">
-          {activeTab === 'dashboard' && (
-            <DashboardView
-              patients={patients}
-              appointments={appointments}
-              onNavigateTab={setActiveTab}
-              onOpenAddPatient={() => setIsGlobalAddPatientOpen(true)}
-              onOpenAddAppointment={() => {
-                setPreselectedPatientForApt(null);
-                setIsGlobalAddAppointmentOpen(true);
-              }}
-              onSelectPatient={p => setDetailPatient(p)}
-              onSelectAppointment={a => setDetailAppointment(a)}
-              onOpenCrudGuide={() => setIsCrudGuideOpen(true)}
-            />
-          )}
-
           {activeTab === 'patients' && (
             <PatientsView
               patients={patients}

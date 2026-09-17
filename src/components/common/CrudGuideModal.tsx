@@ -1,10 +1,11 @@
 import React from 'react';
+import { ActiveTab } from '../../types';
 import { X, CheckCircle2, Database, ShieldCheck, Sparkles, ArrowRight } from 'lucide-react';
 
 interface CrudGuideModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onNavigateTab: (tab: 'dashboard' | 'patients' | 'appointments' | 'settings') => void;
+  onNavigateTab: (tab: ActiveTab) => void;
   onTriggerAddPatient: () => void;
   onTriggerAddAppointment: () => void;
 }
